@@ -1,0 +1,23 @@
+{
+  "name": "fiverr-clone-app",
+  "version": "1.0.0",
+  "description": "A simple fiverr clone using MERN stack",
+  "main": "server.js",
+  "engines": {
+    "node": ">=18.16.0",
+    "npm": ">=9.5.1"
+  },
+  "scripts": {
+    "start": "nodemon server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}
