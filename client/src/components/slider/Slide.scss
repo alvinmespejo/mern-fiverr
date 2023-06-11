@@ -1,0 +1,30 @@
+.slide {
+  display: flex;
+  justify-content: center;
+  padding: 100px 0px;
+
+  .container {
+    width: 1280px;
+    position: relative;
+  }
+  .slick-prev,
+  .slick-next {
+    background-color: lightgray;
+    border-radius: 50%;
+    // width: 40px;
+    // height: 40px;
+    // position: absolute;
+    // top: 0;
+    // bottom: 0;
+    // margin: auto;
+  }
+
+  .slick-slider.slick-initialized {
+    position: static;
+    //   margin-left: 16px;
+  }
+
+  .slick-prev {
+    //   left: -25px;
+  }
+}
