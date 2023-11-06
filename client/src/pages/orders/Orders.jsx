@@ -1,11 +1,43 @@
 import React from 'react';
 import './Orders.scss';
+import { useQuery } from '@tanstack/react-query';
+import apiRequest from '../../utils/apiRequest.js';
+import { useNavigate } from 'react-router-dom';
 
 const Orders = () => {
-  const currentUser = {
-    id: 1,
-    username: 'John Doe',
-    isSeller: true,
+  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+  const navigate = useNavigate();
+  // console.log(currentUser.user);
+  const { isLoading, error, data } = useQuery({
+    queryKey: [`/orders/${currentUser?.user.id}`],
+    queryFn: () =>
+      apiRequest
+        .get(`/orders`)
+        .then((resp) => {
+          return resp.data.orders;
+        })
+        .catch(() => {
+          throw new Error('Error fetching gig.');
+        }),
+  });
+
+  const handleOrderContact = async (order) => {
+    const buyerId = order.buyerId;
+    const sellerId = order.sellerId;
+
+    const id = sellerId + buyerId;
+
+    try {
+      const resp = await apiRequest.get(`/conversations/${id}`);
+      navigate(`/messages/${resp.data.conversation.id}`);
+    } catch (err) {
+      if (err.response.status === 404) {
+        const resp = await apiRequest.post(`/conversations/${id}`, {
+          to: currentUser.user.isSeller ? sellerId : buyerId,
+        });
+        navigate(`/messages/${resp.data.conversation.id}`);
+      }
+    }
   };
 
   return (
@@ -14,117 +46,43 @@ const Orders = () => {
         <div className='title'>
           <h1>Orders</h1>
         </div>
-        <table>
-          <tr>
-            <th>Image</th>
-            <th>Title</th>
-            <th>Price</th>
-            <th>{currentUser?.isSeller ? 'Buyer' : 'Seller'}</th>
-            <th>Contact</th>
-          </tr>
-          <tr>
-            <td>
-              <img
-                className='image'
-                src='https://images.pexels.com/photos/270408/pexels-photo-270408.jpeg?auto=compress&cs=tinysrgb&w=1600'
-                alt=''
-              />
-            </td>
-            <td>Stunning concept art</td>
-            <td>
-              59.<sup>99</sup>
-            </td>
-            <td>13</td>
-            <td>
-              <img className='delete' src='./assets/message.png' alt='' />
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <img
-                className='image'
-                src='https://images.pexels.com/photos/270408/pexels-photo-270408.jpeg?auto=compress&cs=tinysrgb&w=1600'
-                alt=''
-              />
-            </td>
-            <td>Ai generated concept art</td>
-            <td>
-              120.<sup>99</sup>
-            </td>
-            <td>41</td>
-            <td>
-              <img className='delete' src='./assets/message.png' alt='' />
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <img
-                className='image'
-                src='https://images.pexels.com/photos/270408/pexels-photo-270408.jpeg?auto=compress&cs=tinysrgb&w=1600'
-                alt=''
-              />
-            </td>
-            <td>High quality digital character</td>
-            <td>
-              79.<sup>99</sup>
-            </td>
-            <td>55</td>
-            <td>
-              <img className='delete' src='./assets/message.png' alt='' />
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <img
-                className='image'
-                src='https://images.pexels.com/photos/270408/pexels-photo-270408.jpeg?auto=compress&cs=tinysrgb&w=1600'
-                alt=''
-              />
-            </td>
-            <td>Illustration hyper realistic painting</td>
-            <td>
-              119.<sup>99</sup>
-            </td>
-            <td>29</td>
-            <td>
-              <img className='delete' src='./assets/message.png' alt='' />
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <img
-                className='image'
-                src='https://images.pexels.com/photos/270408/pexels-photo-270408.jpeg?auto=compress&cs=tinysrgb&w=1600'
-                alt=''
-              />
-            </td>
-            <td>Original ai generated digital art</td>
-            <td>
-              59.<sup>99</sup>
-            </td>
-            <td>34</td>
-            <td>
-              <img className='delete' src='./assets/message.png' alt='' />
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <img
-                className='image'
-                src='https://images.pexels.com/photos/270408/pexels-photo-270408.jpeg?auto=compress&cs=tinysrgb&w=1600'
-                alt=''
-              />
-            </td>
-            <td>Text based ai generated art</td>
-            <td>
-              110.<sup>99</sup>
-            </td>
-            <td>16</td>
-            <td>
-              <img className='delete' src='./assets/message.png' alt='' />
-            </td>
-          </tr>
-        </table>
+        {isLoading ? (
+          'Loading orders...'
+        ) : error ? (
+          'Error loading orders.'
+        ) : (
+          <table>
+            <thead>
+              <tr>
+                <th>Image</th>
+                <th>Title</th>
+                <th>Price</th>
+                <th>Type</th>
+                <th>Contact</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data?.map((order) => (
+                <tr key={order._id}>
+                  <td>
+                    <img className='image' src={order.img} alt='' />
+                  </td>
+                  <td>{order.title}</td>
+                  <td>{order.price}</td>
+                  <td>{currentUser?.isSeller ? 'Seller' : 'Buyer'}</td>
+                  <td>
+                    <img
+                      className='delete'
+                      src='./assets/message.png'
+                      onClick={() => handleOrderContact(order)}
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot></tfoot>
+          </table>
+        )}
       </div>
     </div>
   );

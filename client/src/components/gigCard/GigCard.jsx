@@ -1,21 +1,51 @@
 import React from 'react';
-import './GigCard.scss';
 import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+
+import apiRequest from '../../utils/apiRequest.js';
+import './GigCard.scss';
 
 const GigCard = ({ item }) => {
+  // const { isLoading, error, data } = useQuery({
+  //   queryKey: [`user/${item.userId}`],
+  //   queryFn: () =>
+  //     apiRequest
+  //       .get(`/users/${item.userId._id.toString()}`)
+  //       .then((resp) => {
+  //         return resp.data.user;
+  //       })
+  //       .catch(() => {
+  //         throw new Error('Error fetching gigs.');
+  //       }),
+  // });
+
   return (
-    <Link to={'/gigs/123'} className='link'>
+    <Link to={`/gigs/${item._id.toString()}`} className='link'>
       <div className='gig-card'>
-        <img src={item.img} alt='' />
+        <img src={item.cover} alt='' />
         <div className='info'>
           <div className='user'>
-            <img src={item.pp} alt='' />
-            <span>{item.username}</span>
+            {/* {isLoading ? (
+              `Loading...`
+            ) : error ? (
+              `Something went wrong!`
+            ) : (
+              <>
+                <img src={data.img || '/assets/noavatar.jpg'} alt='' />
+                <span>{data.username}</span>
+              </>
+            )} */}
+
+            <img src={item?.userId?.img || '/assets/noavatar.jpg'} alt='' />
+            <span>{item?.userId?.username}</span>
           </div>
-          <p>{item.desc}</p>
+          <p>{item.shortDesc}</p>
           <div className='star'>
-            <img src='/assets/star.png' alt='' />
-            <span>{item.star}</span>
+            {item.totalStars > 0 && <img src='/assets/star.png' alt='' />}
+            <span>
+              {!isNaN(Math.round(item.totalStars / item.starNumber)) &&
+                Math.round(item.totalStars / item.starNumber)}
+            </span>
           </div>
         </div>
         <hr />

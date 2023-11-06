@@ -1,5 +1,6 @@
 import React from 'react';
 import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import Navbar from './components/navbar/Navbar';
 import Footer from './components/footer/Footer';
@@ -11,15 +12,24 @@ import MyGigs from './pages/myGigs/MyGigs';
 import Add from './pages/add/Add';
 import Messages from './pages/messages/Messages';
 import Message from './pages/messages/Message';
+import Login from './pages/login/Login';
+import Register from './pages/register/Register';
+import Payment from './pages/payment/Payment';
+import Success from './pages/orders/Success';
+
 import './app.scss';
 
+// console.log(import.meta.env);
 const App = () => {
+  const queryClient = new QueryClient();
   const Layout = () => {
     return (
       <div className='app'>
-        <Navbar />
-        <Outlet />
-        <Footer />
+        <QueryClientProvider client={queryClient}>
+          <Navbar />
+          <Outlet />
+          <Footer />
+        </QueryClientProvider>
       </div>
     );
   };
@@ -61,15 +71,27 @@ const App = () => {
           path: '/messages/:id',
           element: <Message />,
         },
+        {
+          path: '/signin',
+          element: <Login />,
+        },
+        {
+          path: '/register',
+          element: <Register />,
+        },
+        {
+          path: '/payment/:id',
+          element: <Payment />,
+        },
+        {
+          path: '/success',
+          element: <Success />,
+        },
       ],
     },
   ]);
 
-  return (
-    <div>
-      <RouterProvider router={router} />
-    </div>
-  );
+  return <RouterProvider router={router} />;
 };
 
 export default App;
