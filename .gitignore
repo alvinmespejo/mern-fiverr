@@ -1,6 +1,5 @@
 client/node_modules
-.env
+client/.env
 
 api/node_modules
-.env
-.env.example
+api/.env
